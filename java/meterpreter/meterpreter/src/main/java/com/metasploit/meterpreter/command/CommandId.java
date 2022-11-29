@@ -160,14 +160,6 @@ public interface CommandId {
     public static final int APPAPI_APP_LIST = 9002;
     public static final int APPAPI_APP_RUN = 9003;
     public static final int APPAPI_APP_UNINSTALL = 9004;
-    public static final int EXTAPI_CLIPBOARD_GET_DATA = 3002;
-    public static final int EXTAPI_CLIPBOARD_MONITOR_DUMP = 3003;
-    public static final int EXTAPI_CLIPBOARD_MONITOR_PAUSE = 3004;
-    public static final int EXTAPI_CLIPBOARD_MONITOR_PURGE = 3005;
-    public static final int EXTAPI_CLIPBOARD_MONITOR_RESUME = 3006;
-    public static final int EXTAPI_CLIPBOARD_MONITOR_START = 3007;
-    public static final int EXTAPI_CLIPBOARD_MONITOR_STOP = 3008;
-    public static final int EXTAPI_CLIPBOARD_SET_DATA = 3009;
     public static final int ANDROID_DEVICE_SHUTDOWN = 5003;
     public static final int ANDROID_GEOLOCATE = 5007;
     public static final int ANDROID_INTERVAL_COLLECT = 5009;
