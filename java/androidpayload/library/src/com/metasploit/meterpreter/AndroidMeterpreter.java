@@ -151,6 +151,14 @@ public class AndroidMeterpreter extends Meterpreter {
             mgr.registerCommand(CommandId.ANDROID_INTERVAL_COLLECT, android_interval_collect.class);
             mgr.registerCommand(CommandId.ANDROID_SQLITE_QUERY, android_sqlite_query.class);
             mgr.registerCommand(CommandId.ANDROID_WAKELOCK, android_wakelock.class);
+            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_GET_DATA, clipboard_get_data.class);
+            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_SET_DATA, clipboard_set_data.class);
+            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_DUMP, clipboard_monitor_dump.class);
+            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_PAUSE, clipboard_monitor_pause.class);
+            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_PURGE, clipboard_monitor_purge.class);
+            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_RESUME, clipboard_monitor_resume.class);
+            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_START, clipboard_monitor_start.class);
+            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_STOP, clipboard_monitor_stop.class);
         }
         return getCommandManager().getNewCommandIds();
     }
