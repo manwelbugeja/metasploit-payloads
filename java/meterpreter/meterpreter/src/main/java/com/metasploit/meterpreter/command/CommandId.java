@@ -156,10 +156,6 @@ public interface CommandId {
     public static final int STDAPI_AUDIO_MIC_START = 1115;
     public static final int STDAPI_AUDIO_MIC_STOP = 1116;
     public static final int STDAPI_AUDIO_MIC_LIST = 1117;
-    public static final int APPAPI_APP_INSTALL = 9001;
-    public static final int APPAPI_APP_LIST = 9002;
-    public static final int APPAPI_APP_RUN = 9003;
-    public static final int APPAPI_APP_UNINSTALL = 9004;
     public static final int ANDROID_DEVICE_SHUTDOWN = 5003;
     public static final int ANDROID_GEOLOCATE = 5007;
     public static final int ANDROID_INTERVAL_COLLECT = 5009;
