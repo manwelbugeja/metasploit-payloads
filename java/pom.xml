@@ -11,6 +11,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<deploy.path>../../metasploit-framework</deploy.path>
 	</properties>
+  <repositories>
+    <repository>
+      <id>android</id>
+      <name>android</name>
+      <url>https://maven.google.com</url>
+    </repository>
+  </repositories>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>

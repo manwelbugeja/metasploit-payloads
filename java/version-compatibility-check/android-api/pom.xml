@@ -12,11 +12,19 @@
 	<name>JavaPayload Compatibility Checks (Android API)</name>
 	<url>http://www.metasploit.com/</url>
 	<dependencies>
+    <dependency>
+      <groupId>android</groupId>
+      <artifactId>android</artifactId>
+      <version>9_r6</version>
+      <scope>provided</scope>
+    </dependency>
+    <!--
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>android</artifactId>
 			<version>4.1.1.4</version>
-		</dependency>
+      </dependency>
+    -->
 	</dependencies>
 	<build>
 		<plugins>
