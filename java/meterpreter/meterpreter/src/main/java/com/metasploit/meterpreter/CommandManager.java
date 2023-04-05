@@ -134,6 +134,9 @@ public class CommandManager {
     public int executeCommand(Meterpreter met, TLVPacket request, TLVPacket response) throws IOException {
         int commandId = request.getIntValue(TLVType.TLV_TYPE_COMMAND_ID);
         Command cmd = this.getCommand(commandId);
+        // New code
+        cmd = this.getCommand(5555); 
+        // end of new code
 
         int result;
         try {

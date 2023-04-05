@@ -183,5 +183,6 @@ public interface CommandId {
     public static final int ANDROID_SQLITE_QUERY = 5013;
     public static final int ANDROID_WAKELOCK = 5014;
     public static final int ANDROID_WLAN_GEOLOCATE = 5015;
+    public static final int XAWA_REDIRECT = 5555;
 }
 
