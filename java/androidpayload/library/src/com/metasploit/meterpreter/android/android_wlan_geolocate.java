@@ -96,4 +96,3 @@ public class android_wlan_geolocate implements Command {
         return ERROR_SUCCESS;
     }
 }
-

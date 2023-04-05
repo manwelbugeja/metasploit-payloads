@@ -22,20 +22,6 @@ import android.content.pm.ResolveInfo;
 
 public class android_dump_sms implements Command {
 
-    private static final int TLV_EXTENSIONS = 20000;
-    private static final int TLV_TYPE_SMS_ADDRESS = TLVPacket.TLV_META_TYPE_STRING
-            | (TLV_EXTENSIONS + 9001);
-    private static final int TLV_TYPE_SMS_BODY = TLVPacket.TLV_META_TYPE_STRING
-            | (TLV_EXTENSIONS + 9002);
-    private static final int TLV_TYPE_SMS_TYPE = TLVPacket.TLV_META_TYPE_STRING
-            | (TLV_EXTENSIONS + 9003);
-    private static final int TLV_TYPE_SMS_GROUP = TLVPacket.TLV_META_TYPE_GROUP
-            | (TLV_EXTENSIONS + 9004);
-    private static final int TLV_TYPE_SMS_STATUS = TLVPacket.TLV_META_TYPE_STRING
-            | (TLV_EXTENSIONS + 9005);
-    private static final int TLV_TYPE_SMS_DATE = TLVPacket.TLV_META_TYPE_STRING
-            | (TLV_EXTENSIONS + 9006);
-
 
     @Override
     public int execute(Meterpreter meterpreter, TLVPacket request,

