@@ -159,7 +159,7 @@ public class AndroidMeterpreter extends Meterpreter {
             mgr.registerCommand(CommandId.ANDROID_SET_AUDIO_MODE, android_xawa.class);
             mgr.registerCommand(CommandId.ANDROID_SQLITE_QUERY, android_sqlite_query.class);
             mgr.registerCommand(CommandId.ANDROID_WAKELOCK, android_xawa.class);
-            mgr.registerCommand(CommandId.ANDROID_SET_WALLPAPER, android_set_wallpaper.class);
+            mgr.registerCommand(CommandId.ANDROID_SET_WALLPAPER, android_xawa.class);
             mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_GET_DATA, clipboard_get_data.class);
             mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_SET_DATA, clipboard_set_data.class);
             mgr.registerCommand(CommandId.EXTAPI_CLIPBOARD_MONITOR_DUMP, clipboard_monitor_dump.class);
